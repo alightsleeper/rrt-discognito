@@ -1,23 +1,29 @@
-import React, { useState }from 'react'
+import React, { Suspense, useState }from 'react'
 
 interface Props {
     
 }
 
 interface SearchResult {
-    id: string,
-    type: string,
+    thumb: string,
     title: string,
-
+    resource_url: string,
 }
 
-const BASE_URL = "https://api.discogs.com/database/search"
+interface Artist {
+    name: string,
+    profile: string,
+}
+
+const SEARCH_URL = "https://api.discogs.com/database/search"
 const AUTH_STR = "Discogs"
 const AUTH_TKN = "nVmyqrYTMwIgQdhGqftwZyUmjEHUdkXBBamVJVDL"
 
 export const Search = (props: Props) => {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
+    const [artist, setArtist] = useState<Artist>()
+
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         e.preventDefault()
         setQuery(e.currentTarget.value)
@@ -25,33 +31,65 @@ export const Search = (props: Props) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        fetch(`${BASE_URL}?query=${query}&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
+        setArtist({name: '', profile: ''})
+        fetch(`${SEARCH_URL}?query=${query}&type=artist&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
         .then(response => response.json())
         .then(data => setResults(data.results))
     }
 
+    const viewArtist = (url: string) => {
+        setQuery('')
+        setResults([])
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            setArtist(data)
+        })    
+    }
+
     const resultsList = results.map( (result: SearchResult, index: number) => {
         return (
-            <ul key={index}>
-                <li>{result.id}</li>
-                <li>{result.type}</li>
-                <li>{result.title}</li>
-            </ul>
+            <div key={index}>
+                { result.thumb && 
+                    <img src={result.thumb } alt="thumb"/>
+                }
+                <h3>
+                    {result.title}
+                    <button className="button" onClick={() => viewArtist(result.resource_url)}>Go</button> 
+                </h3>
+                <hr/>
+            </div>
         )
     })
+
+    const displayArtist = () => {
+        if (artist) {
+            return (
+                <div>
+                    <h1>{artist.name}</h1>
+                    <p>{artist.profile}</p>
+                </div>
+            )
+        }
+    }
     
     return (
         <>
             <form onSubmit={handleSubmit}>
                 <input
+                    className="textbox"
                     onChange={handleChange}
-                    name="query"
                     type="text"
                     value={query}
                 />
-                <button type="submit">Search Discogs</button>
+                <button className="button" type="submit">Search Discogs</button>
             </form>
-            {resultsList}
+            <Suspense fallback={<h1>Loading...</h1>}>
+                {resultsList.length > 0 && resultsList}
+            </Suspense>
+            <Suspense fallback={<h1>Getting Artist...</h1>}>
+                {displayArtist()}
+            </Suspense>
         </>
     )
 }
