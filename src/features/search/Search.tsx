@@ -1,4 +1,4 @@
-import React, { Suspense, useState }from 'react'
+import React, { useState }from 'react'
 
 interface Props {
     
@@ -85,12 +85,8 @@ export const Search = (props: Props) => {
                 />
                 <button data-testid="searchBtn" className="button" type="submit">Search {AUTH_STR}</button>
             </form>
-            <Suspense fallback={<h1>Loading...</h1>}>
-                {resultsList.length > 0 && resultsList}
-            </Suspense>
-            <Suspense fallback={<h1>Getting Artist...</h1>}>
-                {displayArtist()}
-            </Suspense>
+            {resultsList.length > 0 && resultsList}
+            {displayArtist()}
         </>
     )
 }

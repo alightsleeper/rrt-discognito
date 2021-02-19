@@ -4,7 +4,7 @@ import { Search } from './features/search/Search';
 const App = () => {
   return (
     <div>
-        <Search />
+      <Search />
     </div>
   );
 }
