@@ -11,8 +11,8 @@ interface SearchResult {
 }
 
 interface Artist {
-    name: string,
-    profile: string,
+    name?: string,
+    profile?: string,
 }
 
 const SEARCH_URL = "https://api.discogs.com/database/search"
@@ -31,7 +31,8 @@ export const Search = (props: Props) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        setArtist({name: '', profile: ''})
+        setResults([])
+        setArtist({})
         fetch(`${SEARCH_URL}?query=${query}&type=artist&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
         .then(response => response.json())
         .then(data => setResults(data.results))
@@ -51,12 +52,9 @@ export const Search = (props: Props) => {
         return (
             <div key={index}>
                 { result.thumb && 
-                    <img src={result.thumb } alt="thumb"/>
+                    <p><img src={result.thumb} alt="thumb"/></p>
                 }
-                <h3>
-                    {result.title}
-                    <button className="button" onClick={() => viewArtist(result.resource_url)}>Go</button> 
-                </h3>
+                <button className="button" onClick={() => viewArtist(result.resource_url)}>{result.title}</button> 
                 <hr/>
             </div>
         )
@@ -81,8 +79,10 @@ export const Search = (props: Props) => {
                     onChange={handleChange}
                     type="text"
                     value={query}
+                    placeholder="Enter artist name"
+                    autoFocus={true}
                 />
-                <button className="button" type="submit">Search Discogs</button>
+                <button className="button" type="submit">Search {AUTH_STR}</button>
             </form>
             <Suspense fallback={<h1>Loading...</h1>}>
                 {resultsList.length > 0 && resultsList}
