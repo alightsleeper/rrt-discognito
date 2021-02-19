@@ -76,13 +76,14 @@ export const Search = (props: Props) => {
             <form onSubmit={handleSubmit}>
                 <input
                     className="textbox"
+                    data-testid="searchInput"
                     onChange={handleChange}
                     type="text"
                     value={query}
                     placeholder="Enter artist name"
                     autoFocus={true}
                 />
-                <button className="button" type="submit">Search {AUTH_STR}</button>
+                <button data-testid="searchBtn" className="button" type="submit">Search {AUTH_STR}</button>
             </form>
             <Suspense fallback={<h1>Loading...</h1>}>
                 {resultsList.length > 0 && resultsList}

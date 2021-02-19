@@ -1,29 +1,35 @@
 import React from 'react'
 import { render, fireEvent, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
 import { Provider } from 'react-redux'
 import { store } from './app/store'
 import App from './App'
 
 test('renders discogs search form and returns results', async () => {
   
-  const { getByText } = render(
+  const { getByText, getByTestId } = render(
     <Provider store={store}>
       <App />
     </Provider>
   )
 
-  const searchButton = getByText('Search Discogs')
+  const searchButton = getByTestId('searchBtn')
   expect(searchButton).toBeInTheDocument()
 
+  const searchInput = getByTestId('searchInput')
+  expect(searchInput).toBeInTheDocument()
+
+  userEvent.type(searchInput, 'fugazi')
+
   fireEvent.click(searchButton)
-  let result = await screen.findByText('Chris Porter')
+  let result = await screen.findByText('Fugazi')
   expect(result).toBeInTheDocument()
 
-  const viewArtistButton = getByText('Chris Porter')
+  const viewArtistButton = getByText('Fugazi')
   expect(viewArtistButton).toBeInTheDocument()
 
   fireEvent.click(viewArtistButton)
-  result = await screen.findByText('British producer and engineer from Southampton, England. Now based in London where he started his career in 1979. Owner of [l=Porterhouse (2)] (1987-2003) and co-owner of [l=Stanley House] (2005-2015) studios.')
+  result = await screen.findByText('Fugazi is an American punk rock band that formed in Washington, D.C. in 1987. The band consists of guitarists and vocalists Ian MacKaye and Guy Picciotto, bassist Joe Lally and drummer Brendan Canty. They are noted for their DIY ethic, manner of business practice, and contempt towards the music industry. Fugazi have performed numerous worldwide tours, produced six studio albums, a film and a comprehensive live series, gaining the band critical acclaim and success around the world. The band has been on an indefinite break since 2003.')
   expect(result).toBeInTheDocument()
-
 })
