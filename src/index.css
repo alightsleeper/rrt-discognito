@@ -23,18 +23,49 @@ body {
   transition: all 0.15s;
 }
 
-.textbox {
-  font-size: 32px;
-  padding: 2px;
-  width: 350px;
-  text-align: center;
-  margin-right: 8px;
-}
-
 .button:hover, .button:focus {
   border: 2px solid rgba(112, 76, 182, 0.4);
 }
 
 .button:active {
   background-color: rgba(112, 76, 182, 0.2);
+}
+
+.btnArtist {
+  margin: 35px -5px;
+  vertical-align: top;
+  font-size: 24px;
+}
+
+.center {
+  text-align: center;
+}
+
+.container {
+  margin: 50px 200px;
+}
+
+img {
+  border: 4px solid rgb(112, 76, 182);
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+}
+
+.searchForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 30px;
+}
+
+.searchResult {
+  margin: 0 10%;
+}
+
+.textbox {
+  font-size: 32px;
+  padding: 2px;
+  width: 300px;
+  text-align: center;
 }
