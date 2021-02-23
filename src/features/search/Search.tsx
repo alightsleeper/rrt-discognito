@@ -24,6 +24,7 @@ export const Search = (props: Props) => {
     const [results, setResults] = useState([])
     const [artist, setArtist] = useState<Artist>()
     const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState('')
 
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         e.preventDefault()
@@ -32,17 +33,25 @@ export const Search = (props: Props) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        setError('')
         setResults([])
         setArtist({})
         setIsLoading(true)
         fetch(`${SEARCH_URL}?query=${query}&type=artist&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
         .then(response => response.json())
-        .then(data => setResults(data.results))
+        .then(data => {
+            if (data.pagination.items > 0) {
+                setResults(data.results)
+            } else {
+                setError('No results found.')
+            }
+        })
         .finally(() => setIsLoading(false))
     }
 
     const viewArtist = (url: string) => {
         setQuery('')
+        setError('')
         setResults([])
         setIsLoading(true)
         fetch(url)
@@ -53,7 +62,7 @@ export const Search = (props: Props) => {
 
     const resultsList = results.map( (result: SearchResult, index: number) => {
         return (
-            <div key={index} className="searchResult">
+            <div key={index}>
                 {result.thumb && <img src={result.thumb} alt="thumb"/>}
                 <button className="button btnArtist" onClick={() => viewArtist(result.resource_url)}>{result.title}</button> 
                 <hr/>
@@ -64,8 +73,8 @@ export const Search = (props: Props) => {
     const displayArtist = () => {
         if (artist) {
             return (
-                <div className="searchResult">
-                    <h1>{artist.name}</h1>
+                <div>
+                    <h1 className="center">{artist.name}</h1>
                     <p>{artist.profile}</p>
                 </div>
             )
@@ -74,7 +83,7 @@ export const Search = (props: Props) => {
     
     return (
         <div className="container">
-            <form className="searchForm" onSubmit={handleSubmit}>
+            <form className="center" onSubmit={handleSubmit}>
                 <input
                     className="textbox"
                     data-testid="searchInput"
@@ -86,8 +95,11 @@ export const Search = (props: Props) => {
                 />
                 <button data-testid="searchBtn" className="button" type="submit">Search {AUTH_STR}</button>
             </form>
-            {isLoading ?  <h3 className="center">Loading...</h3> : resultsList }
-            {displayArtist()}
+            <div className="content">
+                <p className="center">{error}</p>
+                {isLoading ?  <h3 className="center">Loading...</h3> : resultsList }
+                {displayArtist()}
+            </div>
         </div>
     )
 }
