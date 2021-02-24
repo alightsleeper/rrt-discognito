@@ -1,4 +1,6 @@
 import React, { useState }from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectArtist, setArtist } from './searchSlice'
 
 interface Props {
     
@@ -10,7 +12,7 @@ interface SearchResult {
     resource_url: string,
 }
 
-interface Artist {
+export interface Artist {
     name?: string,
     profile?: string,
     releases_url?: string,
@@ -23,9 +25,11 @@ const AUTH_TKN = "nVmyqrYTMwIgQdhGqftwZyUmjEHUdkXBBamVJVDL"
 export const Search = (props: Props) => {
     const [query, setQuery] = useState<string>('')
     const [results, setResults] = useState<SearchResult[]>([])
-    const [artist, setArtist] = useState<Artist>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string>('')
+    
+    const dispatch = useDispatch()
+    const artist = useSelector(selectArtist)
 
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         e.preventDefault()
@@ -34,9 +38,9 @@ export const Search = (props: Props) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        dispatch(setArtist({}))
         setError('')
         setResults([])
-        setArtist({})
         setIsLoading(true)
         fetch(`${SEARCH_URL}?query=${query}&type=artist&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
         .then(response => response.json())
@@ -67,19 +71,8 @@ export const Search = (props: Props) => {
         setIsLoading(true)
         fetch(url)
         .then(response => response.json())
-        .then(data => setArtist(data))
+        .then(data => dispatch(setArtist(data)))
         .finally(() => setIsLoading(false))    
-    }
-
-    const displayArtist = () => {
-        if (artist) {
-            return (
-                <div>
-                    <h1 className="center">{artist.name}</h1>
-                    <p>{artist.profile}</p>
-                </div>
-            )
-        }
     }
     
     return (
@@ -100,7 +93,8 @@ export const Search = (props: Props) => {
                 <p className="center">{error}</p>
                 {isLoading &&  <h3 className="center">Loading...</h3>}
                 {resultsList}
-                {displayArtist()}
+                <h1 className="center">{artist.name}</h1>
+                <p>{artist.profile}</p>
             </div>
         </div>
     )
