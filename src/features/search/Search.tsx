@@ -13,6 +13,7 @@ interface SearchResult {
 interface Artist {
     name?: string,
     profile?: string,
+    releases_url?: string,
 }
 
 const SEARCH_URL = "https://api.discogs.com/database/search"
@@ -20,11 +21,11 @@ const AUTH_STR = "Discogs"
 const AUTH_TKN = "nVmyqrYTMwIgQdhGqftwZyUmjEHUdkXBBamVJVDL"
 
 export const Search = (props: Props) => {
-    const [query, setQuery] = useState('')
-    const [results, setResults] = useState([])
+    const [query, setQuery] = useState<string>('')
+    const [results, setResults] = useState<SearchResult[]>([])
     const [artist, setArtist] = useState<Artist>()
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [error, setError] = useState<string>('')
 
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         e.preventDefault()
@@ -49,7 +50,17 @@ export const Search = (props: Props) => {
         .finally(() => setIsLoading(false))
     }
 
-    const viewArtist = (url: string) => {
+    const resultsList = results.map( (result: SearchResult, index: number) => {
+        return (
+            <div key={index}>
+                {result.thumb && <img src={result.thumb} alt="thumb"/>}
+                <button className="button btnArtist" onClick={() => getArtist(result.resource_url)}>{result.title}</button> 
+                <hr/>
+            </div> 
+        )
+    })
+
+    const getArtist = (url: string) => {
         setQuery('')
         setError('')
         setResults([])
@@ -59,16 +70,6 @@ export const Search = (props: Props) => {
         .then(data => setArtist(data))
         .finally(() => setIsLoading(false))    
     }
-
-    const resultsList = results.map( (result: SearchResult, index: number) => {
-        return (
-            <div key={index}>
-                {result.thumb && <img src={result.thumb} alt="thumb"/>}
-                <button className="button btnArtist" onClick={() => viewArtist(result.resource_url)}>{result.title}</button> 
-                <hr/>
-            </div> 
-        )
-    })
 
     const displayArtist = () => {
         if (artist) {
@@ -97,7 +98,8 @@ export const Search = (props: Props) => {
             </form>
             <div className="content">
                 <p className="center">{error}</p>
-                {isLoading ?  <h3 className="center">Loading...</h3> : resultsList }
+                {isLoading &&  <h3 className="center">Loading...</h3>}
+                {resultsList}
                 {displayArtist()}
             </div>
         </div>
