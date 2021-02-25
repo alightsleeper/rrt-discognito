@@ -1,35 +1,19 @@
 import React, { useState }from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { selectArtist, setArtist } from './searchSlice'
-
-interface Props {
-    
-}
-
-interface SearchResult {
-    thumb: string,
-    title: string,
-    resource_url: string,
-}
-
-export interface Artist {
-    name?: string,
-    profile?: string,
-    releases_url?: string,
-}
+import { useDispatch } from 'react-redux'
+import { setArtist } from './searchSlice'
+import { SearchResult } from '../../app/types'
 
 const SEARCH_URL = "https://api.discogs.com/database/search"
 const AUTH_STR = "Discogs"
 const AUTH_TKN = "nVmyqrYTMwIgQdhGqftwZyUmjEHUdkXBBamVJVDL"
 
-export const Search = (props: Props) => {
+export const Search = () => {
     const [query, setQuery] = useState<string>('')
     const [results, setResults] = useState<SearchResult[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string>('')
     
     const dispatch = useDispatch()
-    const artist = useSelector(selectArtist)
 
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         e.preventDefault()
@@ -76,7 +60,7 @@ export const Search = (props: Props) => {
     }
     
     return (
-        <div className="container">
+        <>
             <form className="center" onSubmit={handleSubmit}>
                 <input
                     className="textbox"
@@ -93,9 +77,7 @@ export const Search = (props: Props) => {
                 <p className="center">{error}</p>
                 {isLoading &&  <h3 className="center">Loading...</h3>}
                 {resultsList}
-                <h1 className="center">{artist.name}</h1>
-                <p>{artist.profile}</p>
             </div>
-        </div>
+        </>
     )
 }

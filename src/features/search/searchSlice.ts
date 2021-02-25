@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk, RootState } from '../../app/store';
-import { Artist } from './Search'
+import { Artist } from '../../app/types'
 
 interface SearchState {
     artist: Artist
