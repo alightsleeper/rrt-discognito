@@ -24,13 +24,11 @@ export const Search = () => {
         e.preventDefault();
         setError('');
         setResults([]);
+        dispatch(setArtist({}));
         setIsLoading(true);
         fetch(`${SEARCH_URL}?query=${query}&type=artist&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
         .then(response => response.json())
-        .then(data => {
-            data.pagination.items === 0 ? setError('No results found.') : setResults(data.results);
-            dispatch(setArtist({}));
-        })
+        .then(data => data.pagination.items === 0 ? setError('No results found.') : setResults(data.results))
         .finally(() => setIsLoading(false));
     };
 

@@ -7,7 +7,7 @@ export const Artist = () => {
     const artist = useSelector(selectArtist)
 
     return (
-        <div className="content">
+        <div>
             <h1 className="center">{artist.name}</h1>
             <p>{artist.profile}</p>
         </div>
