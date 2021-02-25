@@ -1,4 +1,4 @@
-import React, { useState }from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setArtist } from './searchSlice';
 import { SearchResult } from '../../app/types';
@@ -34,7 +34,7 @@ export const Search = () => {
 
     const resultsList = results.map( (result: SearchResult, index: number) => {
         return (
-            <div key={index}>
+            <div className="content" key={index}>
                 {result.thumb && <img src={result.thumb} alt="thumb"/>}
                 <button className="button btnArtist" onClick={() => getArtist(result.resource_url)}>{result.title}</button> 
                 <hr/>
@@ -54,7 +54,7 @@ export const Search = () => {
     };
     
     return (
-        <>
+        <div className="content">
             <form className="center" onSubmit={handleSubmit}>
                 <input
                     className="textbox"
@@ -67,11 +67,11 @@ export const Search = () => {
                 />
                 <button data-testid="searchBtn" className="button" type="submit">Search {AUTH_STR}</button>
             </form>
-            <div className="content">
+            <div className="message">
                 <p className="center">{error}</p>
-                {isLoading &&  <h3 className="center">Loading...</h3>}
-                {resultsList}
+                <p className="center">{isLoading && "Loading..."}</p>
             </div>
-        </>
+            {resultsList}
+        </div>
     );
 };
