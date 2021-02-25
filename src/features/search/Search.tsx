@@ -1,42 +1,38 @@
-import React, { useState }from 'react'
-import { useDispatch } from 'react-redux'
-import { setArtist } from './searchSlice'
-import { SearchResult } from '../../app/types'
+import React, { useState }from 'react';
+import { useDispatch } from 'react-redux';
+import { setArtist } from './searchSlice';
+import { SearchResult } from '../../app/types';
 
-const SEARCH_URL = "https://api.discogs.com/database/search"
-const AUTH_STR = "Discogs"
-const AUTH_TKN = "nVmyqrYTMwIgQdhGqftwZyUmjEHUdkXBBamVJVDL"
+const SEARCH_URL = "https://api.discogs.com/database/search";
+const AUTH_STR = "Discogs";
+const AUTH_TKN = "nVmyqrYTMwIgQdhGqftwZyUmjEHUdkXBBamVJVDL";
 
 export const Search = () => {
-    const [query, setQuery] = useState<string>('')
-    const [results, setResults] = useState<SearchResult[]>([])
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [error, setError] = useState<string>('')
+    const [query, setQuery] = useState<string>('');
+    const [results, setResults] = useState<SearchResult[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
     
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
-        e.preventDefault()
-        setQuery(e.currentTarget.value)
-    }
+        e.preventDefault();
+        setQuery(e.currentTarget.value);
+    };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        dispatch(setArtist({}))
-        setError('')
-        setResults([])
-        setIsLoading(true)
+        e.preventDefault();
+        setError('');
+        setResults([]);
+        setIsLoading(true);
         fetch(`${SEARCH_URL}?query=${query}&type=artist&Authorization=${AUTH_STR}&token=${AUTH_TKN}`)
         .then(response => response.json())
         .then(data => {
-            if (data.pagination.items > 0) {
-                setResults(data.results)
-            } else {
-                setError('No results found.')
-            }
+            data.pagination.items === 0 ? setError('No results found.') : setResults(data.results);
+            dispatch(setArtist({}));
         })
-        .finally(() => setIsLoading(false))
-    }
+        .finally(() => setIsLoading(false));
+    };
 
     const resultsList = results.map( (result: SearchResult, index: number) => {
         return (
@@ -45,19 +41,19 @@ export const Search = () => {
                 <button className="button btnArtist" onClick={() => getArtist(result.resource_url)}>{result.title}</button> 
                 <hr/>
             </div> 
-        )
-    })
+        );
+    });
 
     const getArtist = (url: string) => {
-        setQuery('')
-        setError('')
-        setResults([])
-        setIsLoading(true)
+        setQuery('');
+        setError('');
+        setResults([]);
+        setIsLoading(true);
         fetch(url)
         .then(response => response.json())
         .then(data => dispatch(setArtist(data)))
-        .finally(() => setIsLoading(false))    
-    }
+        .finally(() => setIsLoading(false));    
+    };
     
     return (
         <>
@@ -79,5 +75,5 @@ export const Search = () => {
                 {resultsList}
             </div>
         </>
-    )
-}
+    );
+};

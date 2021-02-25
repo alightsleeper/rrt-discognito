@@ -9,6 +9,6 @@ const App = () => {
       <Artist />
     </div>
   );
-}
+};
 
 export default App;
