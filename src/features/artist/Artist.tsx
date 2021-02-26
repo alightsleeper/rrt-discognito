@@ -12,10 +12,16 @@ export const Artist = () => {
         setReleases([]);
         if(artist.releases_url) {
             setReleasesLoading(true)
-            fetch(artist.releases_url)
+            fetch(artist.releases_url + '?page=1&per_page=500')
             .then(response => response.json())
-            .then(data => data.releases.filter((r: ArtistRelease) => r.type === "master"))
-            .then(filtered => filtered.sort((a: ArtistRelease, b: ArtistRelease) => { return a.stats.community.in_wantlist - b.stats.community.in_wantlist}))
+            .then(data => data.releases.filter((r: ArtistRelease) => (r.type === "master" && r.role==="Main")))
+            .then(filtered => filtered.sort((a: ArtistRelease, b: ArtistRelease) => {
+                return (
+                    // sort releases by most in_wantlist, then least in_collection
+                    (b.stats.community.in_wantlist - a.stats.community.in_wantlist) ||
+                    (a.stats.community.in_collection - b.stats.community.in_collection)
+                );
+            }))
             .then(sorted => setReleases(sorted))
             .finally(() => setReleasesLoading(false))
         };
@@ -26,9 +32,11 @@ export const Artist = () => {
             <div key={index}>
                 <h3>{release.title} {release.year && `(${release.year})`}</h3>
                 <p><strong>In Wantlist: </strong>{release.stats.community.in_wantlist}</p>
+                <p><strong>In Collection: </strong>{release.stats.community.in_collection}</p>
+                <p><strong>URL: </strong>{release.resource_url}</p>
                 <hr/>
-            </div> 
-        );
+            </div>
+        );      
     });
 
     return (

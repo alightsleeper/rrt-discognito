@@ -6,7 +6,8 @@ export interface Artist {
 };
 
 export interface ArtistRelease {
-    resource_url: string
+    resource_url: string,
+    role: string,
     stats: StatsType,
     title: string,
     type: string,

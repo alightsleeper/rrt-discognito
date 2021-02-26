@@ -64,6 +64,7 @@ export const Search = () => {
                     value={query}
                     placeholder="Enter artist name"
                     autoFocus={true}
+                    required
                 />
                 <button data-testid="searchBtn" className="button" type="submit">Search {AUTH_STR}</button>
             </form>
